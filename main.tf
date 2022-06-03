@@ -1,7 +1,25 @@
 locals {
-  cluster_name    = "tf-eks-cluster"
+  cluster_name    = "tf-eks-demo"
   region          = "us-east-1"
-  cluster_version = "1.21"
+  cluster_version = "1.22"
+
+  ami_type  = "AL2_x86_64"
+  disk_size = 30
+
+  instance_type = [
+    "t3.small",
+  ]
+
+  min_size     = 2
+  max_size     = 5
+  desired_size = 2
+
+  vpc_cidr            = "10.0.0.0/16"
+  vpc_private_subnets = ["10.0.10.0/24", "10.0.20.0/24"]
+  vpc_public_subnets  = ["10.0.30.0/24", "10.0.40.0/24"]
+
+  cluster_ip_family         = "ipv4"
+  cluster_service_ipv4_cidr = "10.100.0.0/16"
 
   tags = {
     Terraform = true
@@ -10,15 +28,31 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.7"
+  version = "~> 18.23"
 
-  # cluster_version               = local.cluster_version
-  cluster_name                    = local.cluster_name
+  cluster_name    = local.cluster_name
+  cluster_version = local.cluster_version
+
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
+  cluster_addons = {
+    kube-proxy = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+
+  cluster_ip_family         = local.cluster_ip_family
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   cluster_security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
@@ -52,22 +86,20 @@ module "eks" {
   }
 
   eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 30
-    instance_types         = ["t3.small"]
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    ami_type       = local.ami_type
+    disk_size      = local.disk_size
+    instance_types = local.instance_type
   }
 
   eks_managed_node_groups = {
     mng1 = {
       use_name_prefix = false
 
-      min_size     = 1
-      max_size     = 5
-      desired_size = 1
+      min_size     = local.min_size
+      max_size     = local.max_size
+      desired_size = local.desired_size
 
-      instance_types = ["t3.small"]
-      capacity_type  = "SPOT"
+      capacity_type = "SPOT"
 
       update_config = {
         max_unavailable_percentage = 25 # or set `max_unavailable`
@@ -80,14 +112,14 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.12"
+  version = "~> 3.14"
 
   name = local.cluster_name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
   azs             = ["${local.region}a", "${local.region}b"]
-  private_subnets = ["10.0.10.0/24", "10.0.20.0/24"]
-  public_subnets  = ["10.0.30.0/24", "10.0.40.0/24"]
+  private_subnets = local.vpc_private_subnets
+  public_subnets  = local.vpc_public_subnets
 
   enable_nat_gateway   = true
   single_nat_gateway   = false
@@ -101,24 +133,6 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
-  }
-
-  tags = local.tags
-}
-
-resource "aws_security_group" "additional" {
-  name_prefix = "${local.cluster_name}-additional"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
   }
 
   tags = local.tags
