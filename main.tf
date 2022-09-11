@@ -1,7 +1,7 @@
 locals {
   cluster_name    = "tf-eks-demo"
   region          = "us-east-1"
-  cluster_version = "1.22"
+  cluster_version = "1.23"
 
   ami_type  = "AL2_x86_64"
   disk_size = 30
@@ -28,7 +28,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.23"
+  version = "~> 18.30"
 
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
@@ -112,7 +112,7 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.14"
+  version = "~> 3.16"
 
   name = local.cluster_name
   cidr = local.vpc_cidr
