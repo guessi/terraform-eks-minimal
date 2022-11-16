@@ -108,6 +108,17 @@ module "eks" {
     }
   }
 
+  # fargate_profiles = {
+  #   kube_system = {
+  #     name = "kube-system"
+  #     selectors = [
+  #       {
+  #         namespace = "kube-system"
+  #       }
+  #     ]
+  #   }
+  # }
+
   tags = local.tags
 }
 
