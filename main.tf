@@ -1,7 +1,7 @@
 locals {
   cluster_name    = "tf-eks-demo"
   region          = "us-east-1"
-  cluster_version = "1.24"
+  cluster_version = "1.26"
 
   ami_type  = "AL2_x86_64"
   disk_size = 30
@@ -29,7 +29,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.30"
+  version = "~> 19.13.1"
 
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
@@ -39,12 +39,16 @@ module "eks" {
 
   cluster_addons = {
     kube-proxy = {
+      most_recent       = true
       resolve_conflicts = "OVERWRITE"
     }
     coredns = {
+      most_recent       = true
       resolve_conflicts = "OVERWRITE"
     }
     vpc-cni = {
+      most_recent       = true
+      before_compute    = true
       resolve_conflicts = "OVERWRITE"
     }
   }
@@ -90,6 +94,13 @@ module "eks" {
     ami_type       = local.ami_type
     disk_size      = local.disk_size
     instance_types = local.instance_type
+
+    # We are using the IRSA created below for permissions
+    # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
+    # and then turn this off after the cluster/node group is created. Without this initial policy,
+    # the VPC CNI fails to assign IPs and nodes cannot join the cluster
+    # See https://github.com/aws/containers-roadmap/issues/1666 for more context
+    iam_role_attach_cni_policy = true
   }
 
   eks_managed_node_groups = {
@@ -124,7 +135,7 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.18"
+  version = "~> 4.0.1"
 
   name = local.cluster_name
   cidr = local.vpc_cidr
