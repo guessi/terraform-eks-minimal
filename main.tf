@@ -103,6 +103,9 @@ module "eks" {
     iam_role_attach_cni_policy = true
   }
 
+  // HINT: be aware of the desired_size changes
+  // - https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified
+  // - https://github.com/bryantbiggs/eks-desired-size-hack
   eks_managed_node_groups = {
     mng1 = {
       use_name_prefix = false
