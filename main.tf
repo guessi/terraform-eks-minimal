@@ -1,7 +1,7 @@
 locals {
   cluster_name    = "tf-eks-demo"
   region          = "us-east-1"
-  cluster_version = "1.26"
+  cluster_version = "1.27"
 
   ami_type  = "AL2_x86_64"
   disk_size = 30
