@@ -122,6 +122,10 @@ module "eks" {
     }
   }
 
+  node_security_group_tags = {
+    "karpenter.sh/discovery" = local.cluster_name
+  }
+
   # fargate_profiles = {
   #   kube_system = {
   #     name = "kube-system"
@@ -159,6 +163,7 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
+    "karpenter.sh/discovery"                      = local.cluster_name
   }
 
   tags = local.tags
