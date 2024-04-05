@@ -7,11 +7,6 @@ output "cluster_arn" {
   value       = module.eks.cluster_arn
 }
 
-output "cluster_certificate_authority_data" {
-  description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = module.eks.cluster_certificate_authority_data
-}
-
 output "cluster_endpoint" {
   description = "Endpoint for your Kubernetes API server"
   value       = module.eks.cluster_endpoint
@@ -25,11 +20,6 @@ output "cluster_id" {
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster for the OpenID Connect identity provider"
   value       = module.eks.cluster_oidc_issuer_url
-}
-
-output "cluster_platform_version" {
-  description = "Platform version for the cluster"
-  value       = module.eks.cluster_platform_version
 }
 
 output "cluster_status" {
@@ -79,27 +69,21 @@ output "cluster_iam_role_arn" {
   value       = module.eks.cluster_iam_role_arn
 }
 
-output "cluster_iam_role_unique_id" {
-  description = "Stable and unique string identifying the IAM role"
-  value       = module.eks.cluster_iam_role_unique_id
-}
-
 ################################################################################
 # EKS Addons
 ################################################################################
 
-output "cluster_addons" {
-  description = "Map of attribute maps for all EKS cluster addons enabled"
-  value       = module.eks.cluster_addons
+output "addon_version_kube-proxy" {
+  description = "Addon version - kube-proxy"
+  value       = module.eks.cluster_addons.kube-proxy.addon_version
 }
-
-################################################################################
-# EKS Identity Provider
-################################################################################
-
-output "cluster_identity_providers" {
-  description = "Map of attribute maps for all EKS identity providers enabled"
-  value       = module.eks.cluster_identity_providers
+output "addon_version_vpc-cni" {
+  description = "Addon version - vpc-cni"
+  value       = module.eks.cluster_addons.vpc-cni.addon_version
+}
+output "addon_version_coredns" {
+  description = "Addon version - CoreDNS"
+  value       = module.eks.cluster_addons.coredns.addon_version
 }
 
 ################################################################################
@@ -114,40 +98,4 @@ output "cloudwatch_log_group_name" {
 output "cloudwatch_log_group_arn" {
   description = "Arn of cloudwatch log group created"
   value       = module.eks.cloudwatch_log_group_arn
-}
-
-################################################################################
-# Fargate Profile
-################################################################################
-
-output "fargate_profiles" {
-  description = "Map of attribute maps for all EKS Fargate Profiles created"
-  value       = module.eks.fargate_profiles
-}
-
-################################################################################
-# EKS Managed Node Group
-################################################################################
-
-output "eks_managed_node_groups" {
-  description = "Map of attribute maps for all EKS managed node groups created"
-  value       = module.eks.eks_managed_node_groups
-}
-
-################################################################################
-# Self Managed Node Group
-################################################################################
-
-output "self_managed_node_groups" {
-  description = "Map of attribute maps for all self managed node groups created"
-  value       = module.eks.self_managed_node_groups
-}
-
-################################################################################
-# Additional
-################################################################################
-
-output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
 }
