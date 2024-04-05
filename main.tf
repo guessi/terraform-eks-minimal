@@ -29,13 +29,16 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.21.0"
+  version = "~> 20.8.4"
 
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
+
+  authentication_mode                      = "API_AND_CONFIG_MAP"
+  enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
     kube-proxy = {
@@ -142,7 +145,7 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.5.1"
+  version = "~> 5.7.0"
 
   name = local.cluster_name
   cidr = local.vpc_cidr
