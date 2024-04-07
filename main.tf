@@ -61,32 +61,7 @@ module "eks" {
     }
   }
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
-
-  cluster_ip_family         = local.cluster_ip_family
-  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
-
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
-
   node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
     egress_all = {
       description      = "Node all egress"
       protocol         = "-1"
@@ -97,6 +72,12 @@ module "eks" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  cluster_ip_family         = local.cluster_ip_family
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   eks_managed_node_group_defaults = {
     ami_type       = local.ami_type
@@ -133,17 +114,6 @@ module "eks" {
   node_security_group_tags = {
     "karpenter.sh/discovery" = local.cluster_name
   }
-
-  # fargate_profiles = {
-  #   kube_system = {
-  #     name = "kube-system"
-  #     selectors = [
-  #       {
-  #         namespace = "kube-system"
-  #       }
-  #     ]
-  #   }
-  # }
 
   tags = local.tags
 }
