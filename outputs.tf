@@ -85,6 +85,10 @@ output "addon_version_coredns" {
   description = "Addon version - CoreDNS"
   value       = module.eks.cluster_addons.coredns.addon_version
 }
+output "addon_version_eks-pod-identity-agent" {
+  description = "Addon version - Amazon EKS Pod Identity Agent"
+  value       = module.eks.cluster_addons.eks-pod-identity-agent.addon_version
+}
 
 ################################################################################
 # CloudWatch Log Group

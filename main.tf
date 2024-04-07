@@ -54,6 +54,11 @@ module "eks" {
       before_compute    = true
       resolve_conflicts = "OVERWRITE"
     }
+    eks-pod-identity-agent = {
+      most_recent       = true
+      before_compute    = true
+      resolve_conflicts = "OVERWRITE"
+    }
   }
 
   vpc_id     = module.vpc.vpc_id
