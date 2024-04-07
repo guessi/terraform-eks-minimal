@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 locals {
   cluster_name    = "tf-eks-demo"
   region          = "us-east-1"
@@ -16,9 +18,9 @@ locals {
   max_size     = 5
   desired_size = 2
 
-  vpc_cidr            = "10.0.0.0/16"
-  vpc_private_subnets = ["10.0.10.0/24", "10.0.20.0/24"]
-  vpc_public_subnets  = ["10.0.30.0/24", "10.0.40.0/24"]
+  azs = slice(data.aws_availability_zones.available.names, 0, 2)
+
+  vpc_cidr = "10.0.0.0/16"
 
   cluster_ip_family         = "ipv4"
   cluster_service_ipv4_cidr = "10.100.0.0/16"
@@ -128,9 +130,15 @@ module "vpc" {
   name = local.cluster_name
   cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b"]
-  private_subnets = local.vpc_private_subnets
-  public_subnets  = local.vpc_public_subnets
+  azs = local.azs
+  private_subnets = [
+    cidrsubnet(local.vpc_cidr, 8, 10),
+    cidrsubnet(local.vpc_cidr, 8, 20),
+  ]
+  public_subnets = [
+    cidrsubnet(local.vpc_cidr, 8, 30),
+    cidrsubnet(local.vpc_cidr, 8, 40),
+  ]
 
   enable_nat_gateway   = true
   single_nat_gateway   = false
