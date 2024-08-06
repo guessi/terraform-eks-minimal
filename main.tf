@@ -7,16 +7,18 @@ locals {
 
   ami_type_AL2    = "AL2_x86_64"
   ami_type_AL2023 = "AL2023_x86_64_STANDARD"
-  disk_size       = 30
 
-  instance_type = [
+  volume_size = 30
+  volume_type = "gp3"
+
+  instance_types = [
     "t3a.small",
     "t3.small",
   ]
 
-  min_size     = 2
+  min_size     = 1
   max_size     = 5
-  desired_size = 2
+  desired_size = 1
 
   azs = slice(data.aws_availability_zones.available.names, 0, 2)
 
@@ -83,8 +85,31 @@ module "eks" {
   cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   eks_managed_node_group_defaults = {
-    disk_size      = local.disk_size
-    instance_types = local.instance_type
+    ami_type       = local.ami_type_AL2
+    instance_types = local.instance_types
+
+    use_name_prefix = false
+
+    min_size = local.min_size
+    max_size = local.max_size
+    # This value is ignored after the initial creation
+    # https://github.com/bryantbiggs/eks-desired-size-hack
+    desired_size = local.desired_size
+
+    use_latest_ami_release_version = true
+
+    capacity_type = "SPOT"
+
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = local.volume_size
+          volume_type           = local.volume_type
+          delete_on_termination = true
+        }
+      }
+    }
 
     # We are using the IRSA created below for permissions
     # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
@@ -99,20 +124,11 @@ module "eks" {
   // - https://github.com/bryantbiggs/eks-desired-size-hack
   eks_managed_node_groups = {
     mng1 = {
-      ami_type        = local.ami_type_AL2
-      use_name_prefix = false
-
-      min_size     = local.min_size
-      max_size     = local.max_size
-      desired_size = local.desired_size
-
-      capacity_type = "SPOT"
+      ami_type = local.ami_type_AL2
     }
 
-    al2023_nodeadm = {
-      ami_type                       = local.ami_type_AL2023
-      platform                       = "al2023"
-      use_latest_ami_release_version = true
+    al2023-mng1 = {
+      ami_type = local.ami_type_AL2023
     }
   }
 
