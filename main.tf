@@ -1,9 +1,10 @@
 data "aws_availability_zones" "available" {}
 
 locals {
-  cluster_name    = "tf-eks-demo"
-  region          = "us-east-1"
-  cluster_version = "1.30"
+  cluster_name           = "tf-eks-demo"
+  region                 = "us-east-1"
+  cluster_version        = "1.30"
+  cluster_upgrade_policy = "STANDARD"
 
   ami_type_AL2    = "AL2_x86_64"
   ami_type_AL2023 = "AL2023_x86_64_STANDARD"
@@ -76,6 +77,17 @@ module "eks" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
+  }
+
+  // required:
+  // - hashicorp/aws >= 5.61
+  //   - https://github.com/hashicorp/terraform-provider-aws/releases/tag/v5.61.0
+  //   - https://github.com/hashicorp/terraform-provider-aws/pull/38573
+  // - terraform-aws-modules/eks/aws >= 20.21.0
+  //   - https://github.com/terraform-aws-modules/terraform-aws-eks/releases/tag/v20.21.0
+  //   - https://github.com/terraform-aws-modules/terraform-aws-eks/pull/3112
+  cluster_upgrade_policy = {
+    support_type = local.cluster_upgrade_policy
   }
 
   vpc_id     = module.vpc.vpc_id
