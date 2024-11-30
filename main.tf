@@ -6,7 +6,6 @@ locals {
   cluster_version        = "1.31"
   cluster_upgrade_policy = "STANDARD"
 
-  ami_type_AL2    = "AL2_x86_64"
   ami_type_AL2023 = "AL2023_x86_64_STANDARD"
 
   volume_size = 30
@@ -97,7 +96,7 @@ module "eks" {
   cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   eks_managed_node_group_defaults = {
-    ami_type       = local.ami_type_AL2
+    ami_type       = local.ami_type_AL2023
     instance_types = local.instance_types
 
     use_name_prefix = false
@@ -135,10 +134,6 @@ module "eks" {
   // - https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified
   // - https://github.com/bryantbiggs/eks-desired-size-hack
   eks_managed_node_groups = {
-    mng1 = {
-      ami_type = local.ami_type_AL2
-    }
-
     al2023-mng1 = {
       ami_type = local.ami_type_AL2023
     }
