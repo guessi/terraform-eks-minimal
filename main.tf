@@ -35,7 +35,7 @@ locals {
 module "eks" {
   # https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.31.4"
+  version = "~> 20.36.0"
 
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
@@ -150,7 +150,7 @@ module "eks" {
 module "vpc" {
   # https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.16.0"
+  version = "~> 5.21.0"
 
   name = local.cluster_name
   cidr = local.vpc_cidr
