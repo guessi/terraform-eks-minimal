@@ -6,7 +6,7 @@ Minimal setup for creating EKS cluster
 
 - AWS IAM User/Role with EC2 Full Access Permission
 - Proper configured AWS profile
-- Terraform >= 1.10
+- Terraform >= 1.12
 
 ### Setup Guide
 
