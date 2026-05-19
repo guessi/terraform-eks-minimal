@@ -1,31 +1,31 @@
 terraform {
   # https://support.hashicorp.com/hc/en-us/articles/360021185113-Support-Period-and-End-of-Life-EOL-Policy
   # https://endoflife.date/terraform
-  required_version = ">= 1.12.0"
+  required_version = ">= 1.14.0"
 
   required_providers {
     # https://registry.terraform.io/providers/hashicorp/aws/latest
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"
+      version = "~> 6.45"
     }
 
     # https://registry.terraform.io/providers/hashicorp/kubernetes/latest
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.38"
+      version = "~> 3.1"
     }
 
     # https://registry.terraform.io/providers/hashicorp/null/latest
     null = {
       source  = "hashicorp/null"
-      version = "~> 3.2"
+      version = "~> 3.3"
     }
 
     # https://registry.terraform.io/providers/hashicorp/tls/latest
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.1"
+      version = "~> 4.3"
     }
   }
 }
