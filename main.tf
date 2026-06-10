@@ -3,7 +3,7 @@ data "aws_availability_zones" "available" {}
 locals {
   cluster_name           = "tf-eks-demo"
   region                 = "us-east-1"
-  cluster_version        = "1.35"
+  cluster_version        = "1.36"
   cluster_upgrade_policy = "STANDARD"
 
   ami_type_AL2023 = "AL2023_x86_64_STANDARD"
