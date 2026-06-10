@@ -7,13 +7,13 @@ terraform {
     # https://registry.terraform.io/providers/hashicorp/aws/latest
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.45"
+      version = "~> 6.49"
     }
 
     # https://registry.terraform.io/providers/hashicorp/kubernetes/latest
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 3.1"
+      version = "~> 3.2"
     }
 
     # https://registry.terraform.io/providers/hashicorp/null/latest
